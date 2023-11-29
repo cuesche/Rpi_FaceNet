@@ -14,7 +14,7 @@ variable ifEdgeTPU_1_else_0 in main() to 0.
 
 import io
 import re
-import time
+import time   
 import os
 import shutil
 from tflite_runtime.interpreter import load_delegate
@@ -80,7 +80,7 @@ def main():
         stream.seek(0)
         image_large = Image.open(stream)
         image = image_large.convert('RGB').resize(
-            (input_width, input_height), Image.ANTIALIAS)
+            (input_width, input_height), Image.LANCZOS)
         start_time = time.monotonic()
         results = detect_objects(interpreter, image, 0.9)
         elapsed_ms = (time.monotonic() - start_time) * 1000

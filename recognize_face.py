@@ -21,8 +21,8 @@ from PIL import Image
 from PIL import ImageDraw
 import cv2
 
-import pyttsx3
-engine = pyttsx3.init()
+#import pyttsx3
+#engine = pyttsx3.init()
 
 
 
@@ -61,7 +61,7 @@ def main():
       resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:
       #resolution=(320, 320), framerate=30) as camera:
     camera.rotation=270
-    camera.start_preview()
+    camera.start_preview(fullscreen=False)
     try:
       stream = io.BytesIO()
       annotator = Annotator(camera)
@@ -70,7 +70,7 @@ def main():
         stream.seek(0)
         image_large = Image.open(stream)
         image = image_large.convert('RGB').resize(
-            (input_width, input_height), Image.ANTIALIAS)
+            (input_width, input_height), Image.LANCZOS)
         start_time = time.monotonic()
         results = detect_objects(interpreter, image, 0.5)
         elapsed_ms = (time.monotonic() - start_time) * 1000
@@ -147,10 +147,13 @@ def get_person_from_embedding(people_lables,emb):
         print(average)
     print("person on pic: ", people_lables[who_is_on_pic])
     if who_is_on_pic > 0:
+        """
         engine.say('Hello ')
         engine.say(str(people_lables[who_is_on_pic]))
         engine.runAndWait()
-
+        """
+        print(people_lables[who_is_on_pic])
+        
 def load_labels(path):
   #Loads the labels file. Supports files with or without index numbers.
   with open(path, 'r', encoding='utf-8') as f:
