@@ -33,70 +33,57 @@ CAMERA_HEIGHT = 960
 
 def main():
 
-  ifEdgeTPU_1_else_0 = 1
+
   
-  labels = load_labels('coco_labels.txt')
+  #labels = load_labels('coco_labels.txt')
   people_lables = load_labels('people_labels.txt')
   
   #get interpreter for face detection model
-  if ifEdgeTPU_1_else_0 == 1:
-      interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
-        experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
-  else:
-      interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess.tflite')
+
+  interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
+    experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
   
   interpreter.allocate_tensors()
   _, input_height, input_width, _ = interpreter.get_input_details()[0]['shape']
   
   #get interpreter for face embedding model
-  if ifEdgeTPU_1_else_0 == 1:
-      interpreter_emb = Interpreter(model_path = 'models/Mobilenet1_triplet1589223569_triplet_quant_edgetpu.tflite',
-        experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
-  else:
-      interpreter_emb = Interpreter(model_path = 'models/Mobilenet1_triplet1589223569_triplet_quant.tflite')
+
+  interpreter_emb = Interpreter(model_path = 'models/Mobilenet1_triplet1589223569_triplet_quant_edgetpu.tflite',
+    experimental_delegates=[load_delegate('libedgetpu.so.1.0')]) 
 
   interpreter_emb.allocate_tensors()
 
   with picamera.PiCamera(
-      resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:
-      #resolution=(320, 320), framerate=30) as camera:
+      resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:      
     camera.rotation=270
     camera.start_preview(fullscreen=False, window=(100, 20, 640, 480))
     try:
       stream = io.BytesIO()
-      annotator = Annotator(camera)
+      #annotator = Annotator(camera)
       for _ in camera.capture_continuous(
           stream, format='jpeg', use_video_port=True):
         stream.seek(0)
         image_large = Image.open(stream)
         image = image_large.convert('RGB').resize(
             (input_width, input_height), Image.LANCZOS)
-        start_time = time.monotonic()
-        results = detect_objects(interpreter, image, 0.5)
+        start_time = time.monotonic()##################fractual seconds flasch nimmt nur die nachkommastellen
+        results = detect_objects(interpreter, image, 0.7)#### thereshold face detection
         elapsed_ms = (time.monotonic() - start_time) * 1000
-        #print(image.size)
-
+        
+        """
         annotator.clear()
         annotate_objects(annotator, results, labels)
         annotator.text([5, 0], '%.1fms' % (elapsed_ms))
         annotator.update()
-        
+        """       
         ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
         
         if score > 0.96:
-            #print(ymin, " ", xmin, " ", ymax, " ", xmax)
-            #print(image_large.size)
             img = np.array(image_large)
-            #print("img: ", img.shape)
-            #img = np.asarray(image_large).reshape(CAMERA_WIDTH,CAMERA_HEIGHT,3)
-            #print(img.shape)
-            #plt.imshow(img)
-            #plt.show()
             img_cut = img[ymin:ymax,xmin:xmax,:]
-            #print(img_cut.shape)
             img_cut = cv2.resize(img_cut, dsize=(96, 96), interpolation=cv2.INTER_CUBIC).astype('uint8')
             img_cut = img_cut.reshape(1,96,96,3)/255.
-            #emb = FRmodel.predict(img_cut)
+
             emb = img_to_emb(interpreter_emb,img_cut)
             get_person_from_embedding(people_lables,emb)
             
@@ -141,7 +128,7 @@ def get_person_from_embedding(people_lables,emb):
     print("time for detection: ", end-start)
     for average in averages:
         run = run + 1
-        if average < 0.6 and average < lowest_norm_found: ###<----------The threshold for recognition (0.6 ) lowest_norm_found = average hinzugefügt da dies vermutlich vergessen wurde sonst lowest norm found immer 10
+        if average < 0.4 and average < lowest_norm_found: ###<----------The threshold for recognition (0.6 ) lowest_norm_found = average hinzugefügt da dies vermutlich vergessen wurde sonst lowest norm found immer 10
             who_is_on_pic = run
             lowest_norm_found = average
         print(average)
@@ -152,7 +139,8 @@ def get_person_from_embedding(people_lables,emb):
         engine.say(str(people_lables[who_is_on_pic]))
         engine.runAndWait()
         """
-        print(people_lables[who_is_on_pic])
+        #print(people_lables[who_is_on_pic])
+        print("\n\n\n")
         
 def load_labels(path):
   #Loads the labels file. Supports files with or without index numbers.
