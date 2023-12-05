@@ -36,7 +36,7 @@ def main():
     interpreter.allocate_tensors()
 
     
-    path_person = 'scanned_people/' + str(scan_person)
+    path_person = '../scanned_people/' + str(scan_person)
     
     if os.path.isdir(path_person + '/embeddings') == False:
         os.mkdir(path_person + '/embeddings')

@@ -12,7 +12,6 @@ import os
 import time
 from tflite_runtime.interpreter import load_delegate
 
-from annotation import Annotator
 
 import numpy as np
 import picamera
@@ -59,7 +58,7 @@ def main():
     camera.start_preview(fullscreen=False, window=(100, 20, 640, 480))
     try:
       stream = io.BytesIO()
-      #annotator = Annotator(camera)
+      
       for _ in camera.capture_continuous(
           stream, format='jpeg', use_video_port=True):
         stream.seek(0)
@@ -70,12 +69,7 @@ def main():
         results = detect_objects(interpreter, image, 0.7)#### thereshold face detection
         elapsed_ms = (time.monotonic() - start_time) * 1000
         
-        """
-        annotator.clear()
-        annotate_objects(annotator, results, labels)
-        annotator.text([5, 0], '%.1fms' % (elapsed_ms))
-        annotator.update()
-        """       
+      
         ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
         
         if score > 0.96:
@@ -105,16 +99,16 @@ def get_person_from_embedding(people_lables,emb):
     start = time.time()
     for folder in folders:
         average_one_person = 0
-        #print(folder)
+        
         files = os.listdir(path + folder + '/embeddings')
         files = sorted(files)
         checked = 0
         for file in files:
             emb2 = np.load(path + folder + '/embeddings' + '/' + file)
-            #print(emb.shape)
+            
             norm = np.sum((emb-emb2)**2)
             average_one_person = average_one_person + norm
-            #print(norm)
+            
             checked = checked + 1
             if checked == num_emb_check:
                 break
@@ -139,7 +133,7 @@ def get_person_from_embedding(people_lables,emb):
         engine.say(str(people_lables[who_is_on_pic]))
         engine.runAndWait()
         """
-        #print(people_lables[who_is_on_pic])
+        
         print("\n\n\n")
         
 def load_labels(path):
@@ -235,27 +229,8 @@ def get_best_box_param(results,CAMERA_WIDTH, CAMERA_HEIGHT):
             xmax = int(xmax * CAMERA_WIDTH)
             ymin = int(ymin * CAMERA_HEIGHT)
             ymax = int(ymax * CAMERA_HEIGHT)
-    #print("score: ", best_boxvalue)
-    return ymin, xmin, ymax, xmax, best_boxvalue
-
-def annotate_objects(annotator, results, labels):
-  #Draws the bounding box and label for each object in the results.
-  for obj in results:
-    # Convert the bounding box figures from relative coordinates
-    # to absolute coordinates based on the original resolution
-    ymin, xmin, ymax, xmax = obj['bounding_box']
-    xmin = int(xmin * CAMERA_WIDTH)
-    xmax = int(xmax * CAMERA_WIDTH)
-    ymin = int(ymin * CAMERA_HEIGHT)
-    ymax = int(ymax * CAMERA_HEIGHT)
-
-    # Overlay the box, label, and score on the camera preview
-    annotator.bounding_box([xmin, ymin, xmax, ymax])
-    annotator.text([xmin, ymin],
-                   '%s\n%.2f' % (labels[obj['class_id']], obj['score']))
     
-
-
+    return ymin, xmin, ymax, xmax, best_boxvalue
 
 if __name__ == '__main__':
   main()
