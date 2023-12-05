@@ -74,7 +74,7 @@ def main():
     camera.start_preview()
     try:
       stream = io.BytesIO()
-      annotator = Annotator(camera)
+      annotator = Annotator(camera) ##<<<<<<<<<<<<<<<<<--------- Annotattor
       for _ in camera.capture_continuous(
           stream, format='jpeg', use_video_port=True):
         stream.seek(0)

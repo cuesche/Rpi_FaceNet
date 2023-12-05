@@ -61,7 +61,7 @@ def main():
       resolution=(CAMERA_WIDTH, CAMERA_HEIGHT), framerate=30) as camera:
       #resolution=(320, 320), framerate=30) as camera:
     camera.rotation=270
-    camera.start_preview(fullscreen=False)
+    camera.start_preview(fullscreen=False, window=(100, 20, 640, 480))
     try:
       stream = io.BytesIO()
       annotator = Annotator(camera)
@@ -141,9 +141,9 @@ def get_person_from_embedding(people_lables,emb):
     print("time for detection: ", end-start)
     for average in averages:
         run = run + 1
-        if average < 0.6 and average < lowest_norm_found:
-            lowest_norm_found = average
+        if average < 0.6 and average < lowest_norm_found: ###<----------The threshold for recognition (0.6 ) lowest_norm_found = average hinzugefügt da dies vermutlich vergessen wurde sonst lowest norm found immer 10
             who_is_on_pic = run
+            lowest_norm_found = average
         print(average)
     print("person on pic: ", people_lables[who_is_on_pic])
     if who_is_on_pic > 0:
