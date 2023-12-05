@@ -41,7 +41,7 @@ def main():
   
   #get interpreter for face detection model
   if ifEdgeTPU_1_else_0 == 1:
-      interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
+      interpreter = Interpreter(model_path = '../models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
         experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
   else:
       interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess.tflite')
@@ -51,7 +51,7 @@ def main():
   
   
   
-  person_number = 1 # Change the number of the person you scan. It will create a new number for that person
+  person_number = 2 # Change the number of the person you scan. It will create a new number for that person
   count_images_saved = 0
   
   if os.path.isdir('../scanned_people') == False:
@@ -104,8 +104,8 @@ def main():
             print(img_cut.shape)
             img_cut = cv2.resize(img_cut, dsize=(96, 96), interpolation=cv2.INTER_CUBIC).astype('uint8')
             img_cut_pil = Image.fromarray(img_cut)
-            img_cut_pil.save('scanned_people/' + str(person_number) + '/png/img_' +  str(count_images_saved) + '.png')
-            np.save('scanned_people/' + str(person_number) + '/npy/img_' +  str(count_images_saved),img_cut)
+            img_cut_pil.save('../scanned_people/' + str(person_number) + '/png/img_' +  str(count_images_saved) + '.png')
+            np.save('../scanned_people/' + str(person_number) + '/npy/img_' +  str(count_images_saved),img_cut)
             count_images_saved = count_images_saved + 1
             
         stream.seek(0)

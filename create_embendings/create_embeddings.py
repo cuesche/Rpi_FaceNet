@@ -23,14 +23,14 @@ def main():
     
     ifEdgeTPU_1_else_0 = 1
     
-    scan_person = 1 # Change the number of the folder, where you want to create the embeddings
+    scan_person = 2 # Change the number of the folder, where you want to create the embeddings
 
     #get interpreter for face embedding model
     if ifEdgeTPU_1_else_0 == 1:
-      interpreter = Interpreter(model_path = 'models/Mobilenet1_triplet1589223569_triplet_quant_edgetpu.tflite',
+      interpreter = Interpreter(model_path = '../models/Mobilenet1_triplet1589223569_triplet_quant_edgetpu.tflite',
         experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
     else:
-      interpreter = Interpreter(model_path = 'models/Mobilenet1_triplet1589223569_triplet_quant.tflite')
+      interpreter = Interpreter(model_path = '../models/Mobilenet1_triplet1589223569_triplet_quant.tflite')
 
     
     interpreter.allocate_tensors()
