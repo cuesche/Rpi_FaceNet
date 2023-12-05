@@ -110,6 +110,10 @@ def main():
             
         stream.seek(0)
         stream.truncate()
+        
+        
+        if count_images_saved==50:
+            break
 
     finally:
       camera.stop_preview()
