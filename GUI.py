@@ -3,6 +3,7 @@ import tkinter.messagebox
 import re
 import webbrowser
 import time
+import pyautogui
 
 import recognize_face
 
@@ -12,13 +13,14 @@ class GUI:
     def __init__(self):
         
         self.person="X"
-        #self.browser=webdriver.Chrome()
+        
         
         #init
         self.root = tk.Tk()
         self.root.title("Persöhnlicher Inhalt")
         self.root.geometry("140x60+10+10")
         self.root.configure(background="white")
+        self.root.attributes('-topmost',1)
         
         #labels
         self.labelBig = tk.Label(self.root, text="Willst du deinen eigenen Inhalt sehen", font=("Arial Bold", 10), bg="white", fg="black")
@@ -167,8 +169,10 @@ class GUI:
     def lo_pers_cont(self):
         #persöhnlicher content schliessen
         #self.browser.quit()
-        webbrowser.close()
+        
         print("dashboard schliessen")
+        pyautogui.hotkey('alt','tab')
+        pyautogui.hotkey('ctrl','w')
         self.normal()
         self.person="X"
         return
