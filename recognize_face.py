@@ -72,6 +72,7 @@ def main():
       
         ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
         
+        
         if score > 0.96:
             img = np.array(image_large)
             img_cut = img[ymin:ymax,xmin:xmax,:]
@@ -79,12 +80,13 @@ def main():
             img_cut = img_cut.reshape(1,96,96,3)/255.
 
             emb = img_to_emb(interpreter_emb,img_cut)
-            person=get_person_from_embedding(people_lables,emb)
             
+            person=get_person_from_embedding(people_lables,emb)
+            return person
 
         stream.seek(0)
         stream.truncate()
-        return person
+            
 
     finally:
       camera.stop_preview()
