@@ -24,7 +24,6 @@ import cv2
 #engine = pyttsx3.init()
 
 
-
 from tflite_runtime.interpreter import Interpreter
 
 CAMERA_WIDTH = 1280
@@ -32,11 +31,13 @@ CAMERA_HEIGHT = 960
 
 def main():
 
-
+  start__time=time.time()
+  
+  global unknown_counter#<-----------falls bild schlecht
   
   #labels = load_labels('coco_labels.txt')
   people_lables = load_labels('people_labels.txt')
-  print(type(people_lables),"\n", people_lables)
+  
   #get interpreter for face detection model
 
   interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
@@ -69,9 +70,11 @@ def main():
         results = detect_objects(interpreter, image, 0.7)#### thereshold face detection
         elapsed_ms = (time.monotonic() - start_time) * 1000
         
-      
-        ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
+        global unknown_counter
         
+        ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
+        if (time.time()-start__time)>10:
+            return "unknown"   
         
         if score > 0.96:
             img = np.array(image_large)
@@ -81,7 +84,8 @@ def main():
 
             emb = img_to_emb(interpreter_emb,img_cut)
             
-            person=get_person_from_embedding(people_lables,emb)
+            person=get_person_from_embedding(people_lables,emb)            
+            
             return person
 
         stream.seek(0)
@@ -93,7 +97,7 @@ def main():
 
 def get_person_from_embedding(people_lables,emb):
     #Comares embedding to embedding of scaned people to determine who is on the picture
-    num_emb_check = 20
+    num_emb_check = 20#<-----------------sinnfrei?
     path = 'scanned_people/'
     folders = os.listdir(path)
     folders = sorted(folders)
@@ -131,11 +135,7 @@ def get_person_from_embedding(people_lables,emb):
         print(average)
     print("person on pic: ", people_lables[who_is_on_pic])
     if who_is_on_pic > 0:
-        """
-        engine.say('Hello ')
-        engine.say(str(people_lables[who_is_on_pic]))
-        engine.runAndWait()
-        """
+        
         
         print("\n\n\n")
     return people_lables[who_is_on_pic]

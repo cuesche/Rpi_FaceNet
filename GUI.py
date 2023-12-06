@@ -155,7 +155,7 @@ class GUI:
         #Persöhnlicher Inhalt anzeigen
         self.pers_cont()
         persöhnlicherInhalt=load_labels("persöhnlicher_inhalt.txt")
-        print(persöhnlicherInhalt.keys(),"\n",self.person)
+        
         
         if str(self.person) in persöhnlicherInhalt.keys():
             #self.browser.get(persöhnlicherInhalt[self.person])
