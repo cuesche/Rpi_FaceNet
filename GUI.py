@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox
 import re
-from selenium import webdriver
+import webbrowser
 import time
 
 import recognize_face
@@ -12,7 +12,7 @@ class GUI:
     def __init__(self):
         
         self.person="X"
-        self.browser=webdriver.Chrome()
+        #self.browser=webdriver.Chrome()
         
         #init
         self.root = tk.Tk()
@@ -131,7 +131,7 @@ class GUI:
         Kontrolle ob Person in Datenbank
         '''
     
-        labels=load_labels("Final_project/Rpi_FaceNet/people_labels.txt")
+        labels=load_labels("people_labels.txt")
         
         self.person=recognize_face.main()
         
@@ -152,11 +152,12 @@ class GUI:
     def lo_should_show_pers_cont(self):
         #Persöhnlicher Inhalt anzeigen
         self.pers_cont()
-        persöhnlicherInhalt=load_labels("Final_project/Rpi_FaceNet/persöhnlicher_inhalt.txt")
+        persöhnlicherInhalt=load_labels("persöhnlicher_inhalt.txt")
         print(persöhnlicherInhalt.keys(),"\n",self.person)
         
         if str(self.person) in persöhnlicherInhalt.keys():
-            self.browser.get(persöhnlicherInhalt[self.person])      
+            #self.browser.get(persöhnlicherInhalt[self.person])
+            webbrowser.open(persöhnlicherInhalt[self.person])
             
         else:
             print("Kein Persöhnlicher Inhalt")
@@ -165,7 +166,8 @@ class GUI:
     
     def lo_pers_cont(self):
         #persöhnlicher content schliessen
-        self.browser.quit()
+        #self.browser.quit()
+        webbrowser.close()
         print("dashboard schliessen")
         self.normal()
         self.person="X"
