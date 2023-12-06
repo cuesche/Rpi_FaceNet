@@ -1,7 +1,9 @@
 import tkinter as tk
 import tkinter.messagebox
 
-import time 
+import time
+
+import recognize_face as rec_face 
 
 class GUI:
     
@@ -22,12 +24,14 @@ class GUI:
         
 
         #buttons
-        self.buttonYes = tk.Button(self.root, text="JA", font=("Arial Bold", 10), bg="red", fg="black", command=lambda: test(self))
+        self.buttonYes = tk.Button(self.root, text="JA", font=("Arial Bold", 10), bg="red", fg="black", command=self.lo_normal)
         self.buttonYes.place(x=62, y=30)
         
         self.buttonNO = tk.Button(self.root, text="NEIN", font=("Arial Bold", 10), bg="white", fg="black")
         self.buttonNO.place()
         self.buttonNO.place_forget()
+        
+        
         
         self.root.mainloop()
         
@@ -114,12 +118,49 @@ class GUI:
         self.buttonNO.place(x=50, y=50)
         return 
     
-def test(gui):
-    print("test")
-    gui.no_pers_detected()    
+########### Logik ###########
+        
+        # 0 = normal
+        # 1 = pers_cont
+        # 2 = should_show_pers_cont
+        # 3 = no_pers_detected
+        
+    def lo_normal(self):
+        person=rec_face.main()
+        
+        if person==True:
+            self.should_show_pers_cont()
+            
+        if person==False:
+            self.no_pers_detected()       
+        return
+    
+    def state_one(self):
+        
+        self.pers_cont()
+        self.state = 1
+        return
+    
+    def state_two(self):
+        
+        self.should_show_pers_cont()
+        self.state = 2
+        return
+    
+    def state_three(self):
+        
+        self.no_pers_detected()
+        self.state = 3
+        return
+        
+
+    
         
 
 if __name__ == "__main__":
     gui = GUI()
+    
+    
+    
     
         
