@@ -1,15 +1,20 @@
 import tkinter as tk
 import tkinter.messagebox
-
+import re
+from selenium import webdriver
 import time
 
-import recognize_face as rec_face 
+import recognize_face
+
 
 class GUI:
     
     def __init__(self):
         
-        #init  
+        self.person="X"
+        self.browser=webdriver.Chrome()
+        
+        #init
         self.root = tk.Tk()
         self.root.title("Persöhnlicher Inhalt")
         self.root.geometry("140x60+10+10")
@@ -21,7 +26,7 @@ class GUI:
         
         self.labelSmall = tk.Label(self.root, text="Persöhnicher Inhalt?", font=("Arial Bold", 10), bg="white", fg="black") 
         self.labelSmall.place(x=7, y=0)
-        
+
 
         #buttons
         self.buttonYes = tk.Button(self.root, text="JA", font=("Arial Bold", 10), bg="red", fg="black", command=self.lo_normal)
@@ -30,9 +35,8 @@ class GUI:
         self.buttonNO = tk.Button(self.root, text="NEIN", font=("Arial Bold", 10), bg="white", fg="black")
         self.buttonNO.place()
         self.buttonNO.place_forget()
-        
-        
-        
+
+
         self.root.mainloop()
         
     def normal(self):       
@@ -48,7 +52,7 @@ class GUI:
         
 
         #buttons
-        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="red", fg="black")
+        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="red", fg="black", command=self.lo_normal)
         self.buttonYes.place(x=62, y=30)
         
         self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="white", fg="black")
@@ -69,7 +73,7 @@ class GUI:
         
 
         #buttons
-        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="red", fg="black")
+        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="red", fg="black", command=self.lo_pers_cont)
         self.buttonYes.place(x=62, y=30)
         
         self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="white", fg="black")
@@ -79,23 +83,22 @@ class GUI:
     
     def should_show_pers_cont(self):
         
-        self.root.geometry("430x100+700+350")
+        self.root.geometry("430x120+700+350")
         
         #labels
-        self.labelBig.config(text="Willst du deinen eigenen Inhalt sehen?", font=("Arial Bold", 15), bg="white", fg="black")
-        self.labelBig.place(x=50, y=0)
+        self.labelBig.config(text="Willst du deinen eigenen Inhalt sehen?", font=("Arial Bold", 12), bg="white", fg="black")
+        self.labelBig.place(x=50, y=30)
         
-        self.labelSmall.config(text="Zurück?", font=("Arial Bold", 10), bg="white", fg="black") 
-        self.labelSmall.place_forget()
+        self.labelSmall.config( font=("Arial Bold", 15), bg="white", fg="black") 
+        self.labelSmall.place(x=50, y=0)
         
 
         #buttons
-        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="green", fg="black")
-        self.buttonYes.place(x=360, y=50)
+        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="green", fg="black",command=self.lo_should_show_pers_cont)
+        self.buttonYes.place(x=360, y=70)
         
-        self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="red", fg="black")
-        self.buttonNO.place(x=50, y=50)
-        
+        self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="red", fg="black",command=self.normal)
+        self.buttonNO.place(x=50, y=70)
         return
     
     def no_pers_detected(self):
@@ -111,49 +114,73 @@ class GUI:
         
 
         #buttons
-        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="green", fg="black")
+        self.buttonYes.config(text="JA", font=("Arial Bold", 10), bg="green", fg="black",command=self.lo_normal)
         self.buttonYes.place(x=360, y=50)
         
-        self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="red", fg="black")
+        self.buttonNO.config(text="NEIN", font=("Arial Bold", 10), bg="red", fg="black",command=self.normal)
         self.buttonNO.place(x=50, y=50)
         return 
     
 ########### Logik ###########
         
-        # 0 = normal
-        # 1 = pers_cont
-        # 2 = should_show_pers_cont
-        # 3 = no_pers_detected
         
     def lo_normal(self):
-        person=rec_face.main()
+        '''
+        gesichtserkennung wird auufgerufen
+        person wird gespeichert
+        Kontrolle ob Person in Datenbank
+        '''
+    
+        labels=load_labels("Final_project/Rpi_FaceNet/people_labels.txt")
         
-        if person==True:
+        self.person=recognize_face.main()
+        
+        if self.person in labels.values() and self.person!="unknown":
+            #weiterleitung frage persöhnlicher inhalt
             self.should_show_pers_cont()
+            text="Hallo "+self.person
+            self.labelSmall.config(text=text)
             
-        if person==False:
-            self.no_pers_detected()       
+            
+        else: 
+            #weiterleitung frage nochmal
+            self.no_pers_detected()
+            #self.person="Monika Müller" ##################entfernen
+   
         return
     
-    def state_one(self):
-        
+    def lo_should_show_pers_cont(self):
+        #Persöhnlicher Inhalt anzeigen
         self.pers_cont()
-        self.state = 1
+        persöhnlicherInhalt=load_labels("Final_project/Rpi_FaceNet/persöhnlicher_inhalt.txt")
+        print(persöhnlicherInhalt.keys(),"\n",self.person)
+        
+        if str(self.person) in persöhnlicherInhalt.keys():
+            self.browser.get(persöhnlicherInhalt[self.person])      
+            
+        else:
+            print("Kein Persöhnlicher Inhalt")
+        
         return
     
-    def state_two(self):
-        
-        self.should_show_pers_cont()
-        self.state = 2
+    def lo_pers_cont(self):
+        #persöhnlicher content schliessen
+        self.browser.quit()
+        print("dashboard schliessen")
+        self.normal()
+        self.person="X"
         return
     
-    def state_three(self):
+    
         
-        self.no_pers_detected()
-        self.state = 3
-        return
+def load_labels(path):
+    dict = {}
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            key, value = line.strip().split('::')  # Annahme, dass der Separator ein Tabulator ist
+            dict[key] = value
         
-
+    return dict
     
         
 

@@ -1,0 +1,4 @@
+unknown::https://app.powerbi.com/groups/me/dashboards/6d041d20-836a-4a16-a5b1-5a38d9cf464c?chromeless=1
+Markus Müller::https://mycampus.hslu.ch/de-ch/stud-ta/
+Monika Müller::https://monikammueller.ch
+Pierre Kirchhofer::https://www.hslu.ch/de-ch/hochschule-luzern/ueber-uns/personensuche/profile/?pid=4109
