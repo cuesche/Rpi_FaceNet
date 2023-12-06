@@ -36,7 +36,7 @@ def main():
   
   #labels = load_labels('coco_labels.txt')
   people_lables = load_labels('people_labels.txt')
-  
+  print(type(people_lables),"\n", people_lables)
   #get interpreter for face detection model
 
   interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
@@ -79,11 +79,12 @@ def main():
             img_cut = img_cut.reshape(1,96,96,3)/255.
 
             emb = img_to_emb(interpreter_emb,img_cut)
-            get_person_from_embedding(people_lables,emb)
+            person=get_person_from_embedding(people_lables,emb)
             
 
         stream.seek(0)
         stream.truncate()
+        return person
 
     finally:
       camera.stop_preview()
@@ -135,6 +136,7 @@ def get_person_from_embedding(people_lables,emb):
         """
         
         print("\n\n\n")
+    return people_lables[who_is_on_pic]
         
 def load_labels(path):
   #Loads the labels file. Supports files with or without index numbers.
