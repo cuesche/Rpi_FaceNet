@@ -187,8 +187,7 @@ def load_labels(path):
             dict[key] = value
         
     return dict
-    
-        
+
 
 if __name__ == "__main__":
     gui = GUI()

@@ -1,11 +1,3 @@
-"""
-Run to recognize people that were scanned previously. When a person with name "X" is recognized, the program will give an
-auidio output saying "Hello X".
-
-If you do not have an Edge TPU or you want to see the performance difference, change the
-variable ifEdgeTPU_1_else_0 in main() to 0.
-"""
-
 import io
 import re
 import os
@@ -33,12 +25,8 @@ def main():
 
   start__time=time.time()
   
-  global unknown_counter#<-----------falls bild schlecht
   
-  #labels = load_labels('coco_labels.txt')
   people_lables = load_labels('people_labels.txt')
-  
-  #get interpreter for face detection model
 
   interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
     experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
@@ -69,9 +57,7 @@ def main():
         start_time = time.monotonic()##################fractual seconds flasch nimmt nur die nachkommastellen
         results = detect_objects(interpreter, image, 0.7)#### thereshold face detection
         elapsed_ms = (time.monotonic() - start_time) * 1000
-        
-        global unknown_counter
-        
+
         ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
         if (time.time()-start__time)>10:
             return "unknown"   
@@ -141,17 +127,14 @@ def get_person_from_embedding(people_lables,emb):
     return people_lables[who_is_on_pic]
         
 def load_labels(path):
-  #Loads the labels file. Supports files with or without index numbers.
+  #Loads lables from file
+  dict = {}
   with open(path, 'r', encoding='utf-8') as f:
-    lines = f.readlines()
-    labels = {}
-    for row_number, content in enumerate(lines):
-      pair = re.split(r'[:\s]+', content.strip(), maxsplit=1)
-      if len(pair) == 2 and pair[0].strip().isdigit():
-        labels[int(pair[0])] = pair[1].strip()
-      else:
-        labels[row_number] = pair[0].strip()
-  return labels
+      for line in f:
+          key, value = line.strip().split('::')  
+          dict[key] = value
+        
+  return dict
 
 
 def set_input_tensor(interpreter, image):
