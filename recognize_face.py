@@ -83,7 +83,6 @@ def main():
 
 def get_person_from_embedding(people_lables,emb):
     #Comares embedding to embedding of scaned people to determine who is on the picture
-    num_emb_check = 20#<-----------------sinnfrei?
     path = 'scanned_people/'
     folders = os.listdir(path)
     folders = sorted(folders)
@@ -96,13 +95,14 @@ def get_person_from_embedding(people_lables,emb):
         files = os.listdir(path + folder + '/embeddings')
         files = sorted(files)
         checked = 0
+        num_emb_check =len(files) #<-----------------sinnfrei?
+        
         for file in files:
             emb2 = np.load(path + folder + '/embeddings' + '/' + file)
-            
             norm = np.sum((emb-emb2)**2)
             average_one_person = average_one_person + norm
-            
             checked = checked + 1
+            
             if checked == num_emb_check:
                 break
         average_one_person = average_one_person/num_emb_check
@@ -119,11 +119,7 @@ def get_person_from_embedding(people_lables,emb):
             who_is_on_pic = run
             lowest_norm_found = average
         print(average)
-    print("person on pic: ", people_lables[who_is_on_pic])
-    if who_is_on_pic > 0:
-        
-        
-        print("\n\n\n")
+    print("person on pic: ", people_lables[who_is_on_pic],"\n\n\n")
     return people_lables[who_is_on_pic]
         
 def load_labels(path):
@@ -165,7 +161,7 @@ def img_to_emb(interpreter,input):
     set_input_tensor_emb(interpreter, input)
     interpreter.invoke()
     output_details = interpreter.get_output_details()[0]
-    #emb = np.squeeze(interpreter.get_tensor(output_details['index']))
+    
     emb = interpreter.get_tensor(output_details['index'])
     scale, zero_point = output_details['quantization']
     emb = scale * (emb - zero_point)
