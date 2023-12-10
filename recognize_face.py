@@ -27,6 +27,7 @@ def main():
   
   
   people_lables = load_labels('people_labels.txt')
+  print(people_lables)
 
   interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
     experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
@@ -69,7 +70,6 @@ def main():
             img_cut = img_cut.reshape(1,96,96,3)/255.
 
             emb = img_to_emb(interpreter_emb,img_cut)
-            
             person=get_person_from_embedding(people_lables,emb)            
             
             return person
@@ -89,6 +89,7 @@ def get_person_from_embedding(people_lables,emb):
     averages = np.zeros(len(folders))
     folder_number = 0
     start = time.time()
+    
     for folder in folders:
         average_one_person = 0
         
@@ -117,9 +118,11 @@ def get_person_from_embedding(people_lables,emb):
         run = run + 1
         if average < 0.4 and average < lowest_norm_found: ###<----------The threshold for recognition
             who_is_on_pic = run
+            print(who_is_on_pic)
             lowest_norm_found = average
-        print(average)
-    print("person on pic: ", people_lables[who_is_on_pic],"\n\n\n")
+        
+    print(people_lables, who_is_on_pic)
+    print("person on pic: ", people_lables[who_is_on_pic])
     return people_lables[who_is_on_pic]
         
 def load_labels(path):
@@ -128,7 +131,7 @@ def load_labels(path):
   with open(path, 'r', encoding='utf-8') as f:
       for line in f:
           key, value = line.strip().split('::')  
-          dict[key] = value
+          dict[int(key)] = value
         
   return dict
 

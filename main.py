@@ -20,16 +20,7 @@ try:
 except (requests.ConnectionError, requests.Timeout) as exception:
     print("kein Internet! - " + datetime.now().isoformat())
 
-# Vollbild mit Klick
-print("Dashboard öffnen")
-pyautogui.FAILSAFE = False  # Fehler Cursor Tracking
-webbrowser.open('https://app.powerbi.com/groups/me/dashboards/6d041d20-836a-4a16-a5b1-5a38d9cf464c?chromeless=1')
-time.sleep(10)
-pyautogui.hotkey('f11')
-time.sleep(30)
-time.sleep(2)
-pyautogui.click(1901, 44)  # Meldung Wiederherstellen weg
-pyautogui.click(1815, 1020)  # X/Y Koordinaten Breite anpassen
+
 
 
 # Arbeitszeit
@@ -46,6 +37,16 @@ gui_thread = threading.Thread(target=start_gui)
 gui_thread.start()
 
 time.sleep(5)
+
+# Vollbild mit Klick
+print("Dashboard öffnen")
+pyautogui.FAILSAFE = False  # Fehler Cursor Tracking
+webbrowser.open('https://app.powerbi.com/groups/me/dashboards/6d041d20-836a-4a16-a5b1-5a38d9cf464c?chromeless=1')
+time.sleep(10)
+#pyautogui.hotkey('f11')
+time.sleep(30)
+pyautogui.click(1901, 44)  # Meldung Wiederherstellen weg
+pyautogui.click(1815, 1020)  # X/Y Koordinaten Breite anpassen
 
 print('Loop gestartet. Drücke Ctrl-C um zu beenden.')
 while True:
