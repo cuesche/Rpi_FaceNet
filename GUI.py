@@ -132,10 +132,11 @@ class GUI:
         person wird gespeichert
         Kontrolle ob Person in Datenbank
         '''
-    
+        start_time=time.time()
         labels=load_labels("people_labels.txt")
         
         self.person=recognize_face.main()
+        print(time.time()-start_time, "XXXXXXXXX")
         
         if self.person in labels.values() and self.person!="unknown":
             #weiterleitung frage persöhnlicher inhalt
