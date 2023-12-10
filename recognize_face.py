@@ -95,7 +95,7 @@ def get_person_from_embedding(people_lables,emb):
         files = os.listdir(path + folder + '/embeddings')
         files = sorted(files)
         checked = 0
-        num_emb_check =len(files) #<-----------------sinnfrei?
+        num_emb_check =len(files) #number of embeddings to check
         
         for file in files:
             emb2 = np.load(path + folder + '/embeddings' + '/' + file)
@@ -115,7 +115,7 @@ def get_person_from_embedding(people_lables,emb):
     print("time for detection: ", end-start)
     for average in averages:
         run = run + 1
-        if average < 0.4 and average < lowest_norm_found: ###<----------The threshold for recognition (0.6 ) lowest_norm_found = average hinzugefügt da dies vermutlich vergessen wurde sonst lowest norm found immer 10
+        if average < 0.4 and average < lowest_norm_found: ###<----------The threshold for recognition
             who_is_on_pic = run
             lowest_norm_found = average
         print(average)

@@ -143,19 +143,15 @@ class GUI:
             text="Hallo "+self.person
             self.labelSmall.config(text=text)
             
-            
         else: 
             #weiterleitung frage nochmal
             self.no_pers_detected()
-            #self.person="Monika Müller" ##################entfernen
-   
         return
     
     def lo_should_show_pers_cont(self):
         #Persöhnlicher Inhalt anzeigen
         self.pers_cont()
         persöhnlicherInhalt=load_labels("persöhnlicher_inhalt.txt")
-        
         
         if str(self.person) in persöhnlicherInhalt.keys():
             #self.browser.get(persöhnlicherInhalt[self.person])

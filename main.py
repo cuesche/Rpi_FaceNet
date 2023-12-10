@@ -7,10 +7,9 @@ import platform
 import webbrowser
 import os
 import pyautogui
+import threading 
 
 import GUI
-
-
 from datetime import datetime
 
 # Prüfen Internetverbindung
@@ -28,7 +27,6 @@ webbrowser.open('https://app.powerbi.com/groups/me/dashboards/6d041d20-836a-4a16
 time.sleep(10)
 pyautogui.hotkey('f11')
 time.sleep(30)
-pyautogui.click(1800, 65)  # X/Y Koordinaten Vollbild
 time.sleep(2)
 pyautogui.click(1901, 44)  # Meldung Wiederherstellen weg
 pyautogui.click(1815, 1020)  # X/Y Koordinaten Breite anpassen
@@ -40,11 +38,19 @@ def is_between(time, time_range):
         return time >= time_range[0] or time <= time_range[1]
     return time_range[0] <= time <= time_range[1]
 
+def start_gui():
+    GUI.GUI()
+    
+# Starten des Threads für die GUI
+gui_thread = threading.Thread(target=start_gui)
+gui_thread.start()
+
+time.sleep(5)
+
 print('Loop gestartet. Drücke Ctrl-C um zu beenden.')
 while True:
-    try:
-        gui=GUI.GUI()# <-----------------------------------Where the macic happens!!!
-
+    try:         
+        print("paralellisieren")
         time.sleep(60)  # Prozess verzögern
 
         # Um Mitternach rebooten (falls gewünscht)
