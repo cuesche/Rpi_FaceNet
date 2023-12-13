@@ -51,7 +51,7 @@ time.sleep(10)
 print('Loop gestartet. Drücke Ctrl-C um zu beenden.')
 while True:
     try:         
-        print("paralellisieren")
+        
         time.sleep(60)  # Prozess verzögern
 
         # Um Mitternach rebooten (falls gewünscht)

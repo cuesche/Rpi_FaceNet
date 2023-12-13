@@ -4,6 +4,7 @@ import re
 import webbrowser
 import time
 import pyautogui
+import time
 
 import recognize_face
 
@@ -136,7 +137,7 @@ class GUI:
         labels=load_labels("people_labels.txt")
         
         self.person=recognize_face.main()
-        print(time.time()-start_time, "XXXXXXXXX")
+        print("total elapsed time",time.time()-start_time)
         
         if self.person in labels.values() and self.person!="unknown":
             #weiterleitung frage persöhnlicher inhalt
@@ -169,6 +170,7 @@ class GUI:
         
         print("dashboard schliessen")
         pyautogui.hotkey('alt','tab')
+        time.sleep(0.5)
         pyautogui.hotkey('ctrl','w')
         self.normal()
         self.person="X"

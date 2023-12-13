@@ -27,7 +27,7 @@ def main():
   
   
   people_lables = load_labels('people_labels.txt')
-  print(people_lables)
+  
 
   interpreter = Interpreter(model_path = 'models/ssd_mobilenet_v2_face_quant_postprocess_edgetpu.tflite',
     experimental_delegates=[load_delegate('libedgetpu.so.1.0')])
@@ -55,9 +55,9 @@ def main():
         image_large = Image.open(stream)
         image = image_large.convert('RGB').resize(
             (input_width, input_height), Image.LANCZOS)
-        start_time = time.monotonic()##################fractual seconds flasch nimmt nur die nachkommastellen
+        start_time = time.time()##################fractual seconds flasch nimmt nur die nachkommastellen
         results = detect_objects(interpreter, image, 0.7)#### thereshold face detection
-        elapsed_ms = (time.monotonic() - start_time) * 1000
+        time_mod_1= time.time() - start_time
 
         ymin, xmin, ymax, xmax, score = get_best_box_param(results,CAMERA_WIDTH,CAMERA_HEIGHT)
         if (time.time()-start__time)>10:
@@ -68,7 +68,7 @@ def main():
             img_cut = img[ymin:ymax,xmin:xmax,:]
             img_cut = cv2.resize(img_cut, dsize=(96, 96), interpolation=cv2.INTER_CUBIC).astype('uint8')
             img_cut = img_cut.reshape(1,96,96,3)/255.
-
+            print("time model 1",time_mod_1)
             emb = img_to_emb(interpreter_emb,img_cut)
             person=get_person_from_embedding(people_lables,emb)            
             
@@ -113,15 +113,14 @@ def get_person_from_embedding(people_lables,emb):
     lowest_norm_found = 10
     run = 0
     end = time.time()
-    print("time for detection: ", end-start)
+    print("time for detection model 2: ", end-start)
     for average in averages:
         run = run + 1
         if average < 0.4 and average < lowest_norm_found: ###<----------The threshold for recognition
             who_is_on_pic = run
-            print(who_is_on_pic)
             lowest_norm_found = average
         
-    print(people_lables, who_is_on_pic)
+    
     print("person on pic: ", people_lables[who_is_on_pic])
     return people_lables[who_is_on_pic]
         
